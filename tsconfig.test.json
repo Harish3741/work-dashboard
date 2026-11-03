@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "dom"],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "rootDir": "src/lib",
+    "outDir": ".test-build",
+    "noEmit": false,
+    "declaration": false
+  },
+  "include": ["src/lib/**/*.ts"]
+}

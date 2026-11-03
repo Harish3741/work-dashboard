@@ -1,0 +1,219 @@
+@import "tailwindcss";
+
+/*
+ * Dark-only palette, tuned to the macOS Calendar month view in the reference
+ * screenshot: near-black canvas, hairline grid, raised event cards.
+ */
+:root {
+  --bg: #131313;
+  --surface: #1a1a1a;
+  --card: #2e2e2e;
+  --card-hover: #383838;
+  --border: #2a2a2a;
+  --text: #f2f2f2;
+  --text-muted: #8d8d8d;
+  --text-faint: #5c5c5c;
+  --accent: #e8674a;
+  --focus: #5b8def;
+  /* Weekend columns in the month view, a shade off the canvas as in Calendar.app. */
+  --weekend: #161616;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-faint: var(--text-faint);
+  --color-accent: var(--accent);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+button {
+  cursor: pointer;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* The notes field and the backdrop that draws its text MUST lay text out identically —
+   every property that affects line breaking lives here and is applied to both.
+   Styling either layer's font, spacing, padding or wrapping anywhere else moves the caret
+   and selection away from the text you can see. tests/webkit/notes-editor.mjs pixel-diffs them.
+   Everything for the notes editor is unlayered on purpose: Tailwind's preflight sits in a
+   layer, so it can never win against either layer here. */
+.note-text {
+  font-family: inherit;
+  font-size: 13px;
+  /* 20px, not 24: WebKit draws the caret on every line after the first a full
+     line-height tall, so 24px rows gave a caret twice the height of the text. */
+  line-height: 20px;
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-indent: 0;
+  text-transform: none;
+  text-align: start;
+  tab-size: 8;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: normal;
+  font-kerning: auto;
+  font-variant-ligatures: normal;
+  font-feature-settings: normal;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
+}
+/* Text column starts 22px in: a 14px box plus the 8px gap the per-line rows had. 26px = py-3 + border. */
+.note-stack {
+  position: relative;
+  margin-left: 22px;
+  min-height: calc(20rem - 26px);
+}
+/* The spare 20px row stops a newly wrapped row from scrolling the field before the backdrop grows. */
+.note-backdrop {
+  position: relative;
+  pointer-events: none;
+  padding-bottom: 20px;
+  color: var(--text);
+}
+.note-ln {
+  position: relative;
+  min-height: 20px;
+}
+.note-ln.done {
+  color: var(--text-faint);
+  text-decoration: line-through;
+}
+.note-field {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  resize: none;
+  overflow: hidden;
+  background: transparent;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  caret-color: var(--text);
+}
+.note-field::selection {
+  background: rgba(91, 141, 239, 0.38);
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.note-field::placeholder {
+  color: var(--text-faint);
+  -webkit-text-fill-color: var(--text-faint);
+  opacity: 1;
+}
+/* The note is one writing surface, not a form field: the editor's border
+   lightening (focus-within in NoteEditor) is what shows focus, not a ring. */
+.note-field:focus-visible {
+  outline: none;
+}
+/* The panel title is a heading you can type into, not a form field; its focus
+   shows as the filled, inset-bordered box instead (same reason as the notes). */
+.item-title:focus-visible {
+  outline: none;
+}
+.note-box {
+  position: absolute;
+  left: -22px;
+  top: 3px; /* centres the 14px box in a 20px row */
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  border: 1px solid #6a6a6a;
+  border-radius: 4px;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: auto;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+.note-ln.done > .note-box {
+  border-color: transparent;
+  background-color: #8d8d8d;
+  background-size: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath fill='none' stroke='%23131313' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round' d='M3 7.2l2.6 2.6L11 4.4'/%3E%3C/svg%3E");
+}
+
+/* Thin scrollbars inside day cells and panels. */
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #3a3a3a transparent;
+}
+.scroll-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: #3a3a3a;
+  border-radius: 3px;
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* The "+" affordance that appears on a day cell when hovered. */
+.day-cell .day-add {
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+.day-cell:hover .day-add,
+.day-cell:focus-within .day-add {
+  opacity: 1;
+}
+
+.dragging {
+  opacity: 0.35;
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pop-in {
+  animation: pop-in 140ms ease-out;
+}

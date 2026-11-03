@@ -1,0 +1,20 @@
+node_modules/
+.next/
+out/
+build/
+
+# Local config — contains calendar feed URLs, which grant read access to
+# anyone holding them. Never commit.
+.env
+.env.local
+.env*.local
+
+# SQLite database: your events, habits, to-dos, notes and contacts.
+data/
+
+.DS_Store
+*.log
+
+# tsc output for the test build
+.test-build/
+*.tsbuildinfo
